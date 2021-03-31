@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform, TextInput, TextInputChangeEventData } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, Platform, TextInput, TextInputChangeEventData } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
 
@@ -35,7 +35,13 @@ export default function ContactScreen(){
                 />
 
             ) : (
+                
                 <View>
+                    <View style={style.logoContainer}>
+                        <Image 
+                            source={require('../img/logoGama.png')}
+                        />
+                    </View>
                     <Text>Name: </Text>
                     <TextInput
                         style={style.input}
@@ -81,6 +87,10 @@ const style = StyleSheet.create({
     animationContent: {
         width: 300,
         height: 300
+    },
+    logoContainer:{
+        alignItems: 'center',
+        marginBottom: 32
     },
     input: {
         paddingHorizontal: 20,
