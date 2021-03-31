@@ -1,40 +1,66 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Animated, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 import { RectButton } from 'react-native-gesture-handler'
 
 
-
-
 export default function Home(){
-
     const navigation = useNavigation()
+
+    const fade = useRef(new Animated.Value(0)).current
+
+    const fadeInAnimation = () => {
+        Animated.timing(
+            fade,
+            {
+                toValue: 1,
+                duration: 3000,
+                useNativeDriver: true   
+            }
+        ).start()
+    }
 
     function openNewScreen(screen: string){
         navigation.navigate(screen)
     }
 
     return(
-        <View style={style.Container}>
-            <Text style={style.TextContent}> Home </Text>
+        <SafeAreaView style={style.container}>
+            <Animated.View style={[ style.fadeInStyle ,{ opacity: fade }]}>
+                <Text style={style.textContent}> Home </Text>
+                <Image
+                    source={ require('../img/logoGama.png')}
+                />
+            </Animated.View>
             <View>
-                <Text onPress={ () => openNewScreen('home')}> Home </Text>
-                <Text onPress={ () => openNewScreen('details')}> Details </Text>
+                <RectButton onPress={ () => openNewScreen('home') }>
+                    <Text>Home</Text>
+                </RectButton>
+                
+                <RectButton onPress={ () => openNewScreen('details') }>
+                    <Text>Detalhes</Text>
+                </RectButton>
+
+                <RectButton onPress={ fadeInAnimation }>
+                    <Text>Animation</Text>
+                </RectButton>
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
 
 const style = StyleSheet.create({
-    Container: {
+    container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#68de5a'
+        backgroundColor: '#808080'
     },
-    TextContent: {
+    textContent: {
         color: '#fff',
         fontSize: 22
+    },
+    fadeInStyle: {
+        flex: 1
     }
 })
