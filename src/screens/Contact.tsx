@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform, TextInput, TextInputChangeEventData } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
@@ -11,18 +11,19 @@ export default function ContactScreen(){
     const [ email, setEmail ] = useState('');
     const [ phone, setPhone ] = useState('');
 
-    function handleSendInfo() {
-        const postData = {
-            name,
-            email,
-            phone
-        }
-        sendContact.post('', postData).then(
-            response => {
-                setIsSendMessage(true)
+    const handleSendInfo = useCallback( () => {
+            const postData = {
+                name,
+                email,
+                phone
             }
-        )
-    }
+            sendContact.post('', postData).then(
+                response => {
+                    setIsSendMessage(true)
+                }
+            )
+        }, [ name, email, phone ]
+    )
     return(
         <View style={style.container}>
             { isSendMessage ? (
@@ -41,12 +42,14 @@ export default function ContactScreen(){
                         value={ name } 
                         onChangeText={ text => setName(text) }
                     />
+
                     <Text>Email: </Text>
                     <TextInput
                         style={style.input}
                         value={ email }
                         onChangeText={ text => setEmail(text) }
                     />
+
                     <Text>Telefone: </Text>
                     <TextInput
                         style={style.input}
