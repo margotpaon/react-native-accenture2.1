@@ -6,7 +6,7 @@ import Details from './screens/Details';
 import Home from './screens/Home';
 import ContactScreen from './screens/Contact';
 
-import HeaderComponents from './components/Header'
+import HeaderComponents from './components/Header';
 
 const { Navigator, Screen } = createStackNavigator()
 export default function Route(){

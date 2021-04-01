@@ -1,76 +1,103 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, Platform, TextInput, TextInputChangeEventData } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import LottieView from 'lottie-react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Dimensions,
+    Image,
+    Platform,
+    TextInput,
+    KeyboardAvoidingView
+} from 'react-native';
 
 import { sendContact } from '../service';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ContactScreen(){
-    const [ isSendMessage, setIsSendMessage ] = useState(false)
-    const [ name, setName ] = useState('');
-    const [ email, setEmail ] = useState('');
-    const [ phone, setPhone ] = useState('');
 
-    const handleSendInfo = useCallback( () => {
-            const postData = {
-                name,
-                email,
-                phone
+interface IPostData{
+    name?: string;
+    email?: string;
+    phone?: string;
+}
+
+
+
+
+export default function ContactScreen() {
+    const [isSendMessage, setIsSendMessage] = useState(false)
+    const [postData, setPostData] = useState<IPostData>({});
+
+    const navigation = useNavigation()
+
+    const handleSendInfo = useCallback(() => {
+
+        sendContact.post('', postData).then(
+            response => {
+                setIsSendMessage(true)
             }
-            sendContact.post('', postData).then(
-                response => {
-                    setIsSendMessage(true)
-                }
-            )
-        }, [ name, email, phone ]
+        )
+    }, [postData]
     )
-    return(
-        <View style={style.container}>
-            { isSendMessage ? (
-                <LottieView
-                    source={require('../animation/lf30_editor_ij5vetkw.json')}
-                    style={ style.animationContent }
-                    autoPlay
-                    loop
-                />
 
-            ) : (
-                
-                <View>
-                    <View style={style.logoContainer}>
-                        <Image 
-                            source={require('../img/logoGama.png')}
+    return (
+        <ScrollView style={style.scroolViewContainer}>
+            <KeyboardAvoidingView
+                keyboardVerticalOffset={ 500 }
+                behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+                style={style.container}
+            >
+                {isSendMessage ? (
+                    <View style={style.container}>
+                        <LottieView
+                            source={require('../animation/lf30_editor_ij5vetkw.json')}
+                            style={style.animationContent}
+                            autoPlay
+                            loop
                         />
+                        <RectButton style={style.sendButton} onPress={navigation.goBack}>
+                            <Text style={style.textSendButton}>Voltar</Text>
+                        </RectButton>
                     </View>
-                    <Text>Name: </Text>
-                    <TextInput
-                        style={style.input}
-                        value={ name } 
-                        onChangeText={ text => setName(text) }
-                    />
 
-                    <Text>Email: </Text>
-                    <TextInput
-                        style={style.input}
-                        value={ email }
-                        onChangeText={ text => setEmail(text) }
-                    />
+                ) : (
 
-                    <Text>Telefone: </Text>
-                    <TextInput
-                        style={style.input}
-                        value={ phone }
-                        onChangeText={ text => setPhone(text) }
-                    />
-                    
-                </View>
-            )}
-            
+                    <View >
+                        <View style={style.logoContainer}>
+                            <Image
+                                source={require('../img/logoGama.png')}
+                            />
+                        </View>
+                        <Text>Name: </Text>
+                        <TextInput
+                            style={style.input}
+                            value={postData?.name}
+                            onChangeText={text => setPostData({ ...postData, name: text })}
+                        />
 
-            <RectButton style={style.sendButton} onPress={ handleSendInfo }>
-                <Text style={style.textSendButton}>Enviar email</Text>
-            </RectButton>
-        </View>
+                        <Text>Email: </Text>
+                        <TextInput
+                            style={style.input}
+                            value={postData?.email}
+                            onChangeText={text => setPostData({ ...postData, email: text })}
+                        />
+
+                        <Text>Telefone: </Text>
+                        <TextInput
+                            style={style.input}
+                            value={postData?.phone}
+                            onChangeText={text => setPostData({ ...postData, phone: text })}
+                        />
+
+                        <RectButton style={style.sendButton} onPress={handleSendInfo}>
+                            <Text style={style.textSendButton}>Enviar email</Text>
+                        </RectButton>
+
+                    </View>
+                )}
+            </KeyboardAvoidingView>
+        </ScrollView> 
     )
 }
 
@@ -81,14 +108,18 @@ const style = StyleSheet.create({
         width: Dimensions.get('window').width,
         justifyContent: 'center',
         alignItems: 'center'
-
-
+    },
+    containerKeyBoard: {
+        marginBottom: 40
+    },
+    scroolViewContainer: {
+        flex: 1
     },
     animationContent: {
         width: 300,
         height: 300
     },
-    logoContainer:{
+    logoContainer: {
         alignItems: 'center',
         marginBottom: 32
     },
@@ -104,7 +135,7 @@ const style = StyleSheet.create({
     sendButton: {
         marginTop: 40,
         backgroundColor: '#68de5a',
-        width: Dimensions.get('window').width - 95,
+        width: Dimensions.get('window').width - 65,
         height: 40,
         borderRadius: 22,
         marginRight: 6,

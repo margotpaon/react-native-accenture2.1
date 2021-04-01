@@ -34,7 +34,7 @@ export default function HeaderComponent({ title, showCancel = true }: HeaderProp
                 >
                     <Feather name="x" size={22} color="#fff" />
                 </BorderlessButton>
-            ) : ( <View></View> ) }
+            )  : (<View></View>) }
         </View>
     )
 }
