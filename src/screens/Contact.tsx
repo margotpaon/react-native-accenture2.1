@@ -11,9 +11,11 @@ import {
     TextInput,
     KeyboardAvoidingView
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { sendContact } from '../service';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 
 interface IPostData{
@@ -29,17 +31,39 @@ export default function ContactScreen() {
     const [isSendMessage, setIsSendMessage] = useState(false)
     const [postData, setPostData] = useState<IPostData>({});
 
+    const [ asyncStorageData, setAsyncStorageData ] = useState<IPostData>({})
+
     const navigation = useNavigation()
+
+    const dataStorage = async ( data: IPostData ) => {
+        const valueData = JSON.stringify(data)
+        await AsyncStorage.setItem('@storageApp', valueData)
+    }
 
     const handleSendInfo = useCallback(() => {
 
         sendContact.post('', postData).then(
             response => {
                 setIsSendMessage(true)
+                dataStorage(postData)
             }
         )
     }, [postData]
     )
+
+    const getAllData = async () => {
+        const returnData: string | any = await AsyncStorage.getItem('@storageApp')
+        const jsonReturn: IPostData = JSON.parse(returnData)
+        return jsonReturn
+    } 
+
+    useEffect(() => {
+        getAllData().then(
+            response => {
+                setAsyncStorageData(response)
+            }
+        )
+    }, [])
 
     return (
         <ScrollView style={style.scroolViewContainer}>
@@ -48,6 +72,7 @@ export default function ContactScreen() {
                 behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 style={style.container}
             >
+                { asyncStorageData ? ( <Text>{asyncStorageData.name}</Text>) : '' }
                 {isSendMessage ? (
                     <View style={style.container}>
                         <LottieView
